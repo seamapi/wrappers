@@ -3,7 +3,7 @@
 For the common use case of wrapping a NextJS endpoint with methods that act as middleware.
 
 Wraps a function in layers of other functions, while preserving the input/output
-type. The output of wrappers will always have the type of it's last parameter
+type. The output of wrappers will always have the type of its last parameter
 (the wrapped function)
 
 This function turns this type of composition...
