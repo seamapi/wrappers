@@ -52,3 +52,7 @@ const withLoggedArguments =
 ```
 
 ## Installation
+
+## Automatic Deploy to NPM
+
+To have your PR be automatically deployed to NPM, make sure to tag your commit messages with the [Angular JS commit message format](https://docs.google.com/document/d/1QrDFcIiPjSLDn3EL15IJygNPiHORgU1_OOAqWjiDU5Y/edit#heading=h.t7ifoyph8bd3)
