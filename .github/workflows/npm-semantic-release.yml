@@ -20,7 +20,7 @@ jobs:
           registry-url: "https://registry.npmjs.org"
       - name: Install dependencies
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.SEAMAPI_NPM_TOKEN }}
         run: npm install
       - name: Build NPM package
         run: npm run build
@@ -29,6 +29,6 @@ jobs:
         run: npm run test
       - name: Release
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.SEAMAPI_NPM_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: npx semantic-release
