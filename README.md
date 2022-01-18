@@ -55,4 +55,12 @@ const withLoggedArguments =
 
 ## Automatic Deploy to NPM
 
-To have your PR be automatically deployed to NPM, make sure to tag your commit messages with the [Angular JS commit message format](https://docs.google.com/document/d/1QrDFcIiPjSLDn3EL15IJygNPiHORgU1_OOAqWjiDU5Y/edit#heading=h.t7ifoyph8bd3)
+To have your PR be automatically deployed to NPM, make sure to tag your commit messages with the [Angular JS commit message format](https://docs.google.com/document/d/1QrDFcIiPjSLDn3EL15IJygNPiHORgU1_OOAqWjiDU5Y/edit#heading=h.t7ifoyph8bd3).
+
+i.e.
+| Commit message | Release type |
+| -------------- | ------------ |
+| fix(pencil): stop graphite breaking when too much pressure applied | Fix Release |
+| feat(pencil): add 'graphiteWidth' option	| Feature Release |
+| perf(pencil): remove graphiteWidth option
+| BREAKING CHANGE: The graphiteWidth option has been removed. The default graphite width of 10mm is always used for performance reasons. | Breaking Release (Note that the BREAKING CHANGE: token must be in the footer of the commit) |
