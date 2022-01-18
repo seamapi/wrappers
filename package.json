@@ -1,6 +1,6 @@
 {
   "name": "@seamapi/wrappers",
-  "version": "1.0.1",
+  "version": "1.0.0",
   "main": "dist/wrappers.js",
   "license": "MIT",
   "repository": "git://github.com/hello-seam/nextjs-middleware-wrappers",
