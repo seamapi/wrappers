@@ -1,4 +1,4 @@
-import type {NextApiRequest, NextApiResponse} from "next"
+import type { NextApiRequest, NextApiResponse } from "next"
 
 /*
 
@@ -48,29 +48,94 @@ const withLoggedArguments =
 
 */
 
-type APIHandler<Request extends NextApiRequest> = (req: Request, res: NextApiResponse) => Promise<any>;
+type APIHandler<Request extends NextApiRequest> = (
+  req: Request,
+  res: NextApiResponse
+) => Promise<any>
 
-type Func<PrevousRequest extends NextApiRequest, NextRequest extends NextApiRequest> = (next: APIHandler<NextRequest>) => APIHandler<PrevousRequest>;
+type Func<
+  PrevousRequest extends NextApiRequest,
+  NextRequest extends NextApiRequest
+> = (next: APIHandler<NextRequest>) => APIHandler<PrevousRequest>
 
-// type wrap1 = <T>(wf: T) => T
-// type wrap2 = <T>(mw1: Func, wf: T) => T
-// type wrap3 = <T>(mw1: Func, mw2: Func, wf: T) => T
-// type wrap4 = <T>(mw1: Func, mw2: Func, mw3: Func, wf: T) => T
-// type wrap5 = <T>(mw1: Func, mw2: Func, mw3: Func, mw4: Func, wf: T) => T
-// type wrap6 = <T>(mw1: Func, mw2: Func, mw3: Func, mw4: Func, mw5: Func, wf: T) => T
-// type wrap7 = <T>(mw1: Func, mw2: Func, mw3: Func, mw4: Func, mw5: Func, mw6: Func, wf: T) => T
+export function wrappers<Request extends NextApiRequest>(
+  middlewares: [],
+  handler: APIHandler<Request>
+): APIHandler<Request>
+export function wrappers<Request extends NextApiRequest>(
+  middlewares: [Func<NextApiRequest, Request>],
+  handler: APIHandler<Request>
+): APIHandler<Request>
+export function wrappers<
+  Request extends NextApiRequest,
+  Request2 extends Request
+>(
+  middlewares: [Func<NextApiRequest, Request>, Func<Request, Request2>],
+  handler: APIHandler<Request2>
+): APIHandler<Request2>
+export function wrappers<
+  Request extends NextApiRequest,
+  Request2 extends Request,
+  Request3 extends Request2
+>(
+  middlewares: [
+    Func<NextApiRequest, Request>,
+    Func<Request, Request2>,
+    Func<Request2, Request3>
+  ],
+  handler: APIHandler<Request3>
+): APIHandler<Request3>
+export function wrappers<
+  Request extends NextApiRequest,
+  Request2 extends Request,
+  Request3 extends Request2,
+  Request4 extends Request3
+>(
+  middlewares: [
+    Func<NextApiRequest, Request>,
+    Func<Request, Request2>,
+    Func<Request2, Request3>,
+    Func<Request3, Request4>
+  ],
+  handler: APIHandler<Request4>
+): APIHandler<Request4>
+export function wrappers<
+  Request extends NextApiRequest,
+  Request2 extends Request,
+  Request3 extends Request2,
+  Request4 extends Request3,
+  Request5 extends Request4
+>(
+  middlewares: [
+    Func<NextApiRequest, Request>,
+    Func<Request, Request2>,
+    Func<Request2, Request3>,
+    Func<Request3, Request4>,
+    Func<Request4, Request5>
+  ],
+  handler: APIHandler<Request5>
+): APIHandler<Request5>
+export function wrappers<
+  Request extends NextApiRequest,
+  Request2 extends Request,
+  Request3 extends Request2,
+  Request4 extends Request3,
+  Request5 extends Request4,
+  Request6 extends Request5
+>(
+  middlewares: [
+    Func<NextApiRequest, Request>,
+    Func<Request, Request2>,
+    Func<Request2, Request3>,
+    Func<Request3, Request4>,
+    Func<Request4, Request5>,
+    Func<Request5, Request6>
+  ],
+  handler: APIHandler<Request6>
+): APIHandler<Request6>
 
-type wrap2 = <Request extends NextApiRequest>(middlewares: [Func<NextApiRequest, Request>], handler: APIHandler<Request>) => APIHandler<Request>;
-
-type wrap3 = <Request extends NextApiRequest, Request2 extends Request>(middlewares: [
-  Func<NextApiRequest, Request>,
-  Func<Request, Request2>
-], handler: APIHandler<Request2>) => APIHandler<Request2>;
-
-type Wrappers = wrap2 | wrap3
-
-export const wrappers: wrap3 = (middlewares, handler) => {
-  let lastWrappedFunction = handler;
+export function wrappers(middlewares: any[], handler: APIHandler<any>) {
+  let lastWrappedFunction = handler
   for (const middleware of middlewares) {
     lastWrappedFunction = middleware(lastWrappedFunction as any)
   }
@@ -78,4 +143,4 @@ export const wrappers: wrap3 = (middlewares, handler) => {
   return lastWrappedFunction
 }
 
-export default wrappers;
+export default wrappers
