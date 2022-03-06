@@ -3,7 +3,7 @@
   "version": "1.1.0",
   "main": "dist/wrappers.js",
   "license": "MIT",
-  "repository": "git://github.com/hello-seam/nextjs-middleware-wrappers",
+  "repository": "git://github.com/seamapi/wrappers",
   "scripts": {
     "build": "tsup wrappers.ts --dts --minify"
   },
