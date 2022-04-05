@@ -10,8 +10,8 @@ This function turns this type of composition...
 
 ```ts
 withDatabase(
-  logger.withContext("somecontext")(async (a, b) => {
-    return a
+  logger.withContext("somecontext")(async (req, res) => {
+    res.status(200).end("...")
   })
 )
 ```
@@ -19,9 +19,20 @@ withDatabase(
 Into...
 
 ```ts
-wrappers(withDatabase, logger.withContext("somecontext"), async (a, b) => {
-  return a
+wrappers(withDatabase, logger.withContext("somecontext"), async (req, res) => {
+  res.status(200).end("...")
 })
+
+// OR...
+
+
+wrappers(
+  withDatabase, 
+  logger.withContext("somecontext"),
+  async (req, res) => {
+    res.status(200).end("...")
+  }
+)
 ```
 
 Having this as a utility method helps preserve types, which otherwise can get
