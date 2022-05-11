@@ -1,3 +1,5 @@
+import type { NextApiRequest, NextApiResponse } from "next"
+
 /*
 
 Wraps a function in layers of other functions, while preserving the input/output
@@ -46,28 +48,99 @@ const withLoggedArguments =
 
 */
 
-// TODO middleware should have a required type
-type wrap1 = <T>(wf: T) => T
-type wrap2 = <T>(mw1: any, wf: T) => T
-type wrap3 = <T>(mw1: any, mw2: any, wf: T) => T
-type wrap4 = <T>(mw1: any, mw2: any, mw3: any, wf: T) => T
-type wrap5 = <T>(mw1: any, mw2: any, mw3: any, mw4: any, wf: T) => T
-type wrap6 = <T>(mw1: any, mw2: any, mw3: any, mw4: any, mw5: any, wf: T) => T
-type wrap7 = <T>(mw1: any, mw2: any, mw3: any, mw4: any, mw5: any, mw6: any, wf: T) => T
+type APIHandler<Request extends NextApiRequest> = (
+  req: Request,
+  res: NextApiResponse
+) => Promise<any>
 
-type Wrappers = wrap1 & wrap2 & wrap3 & wrap4 & wrap5 & wrap6 & wrap7
+type Func<
+  PrevousRequest extends NextApiRequest,
+  NextRequest extends NextApiRequest
+> = (next: APIHandler<NextRequest>) => APIHandler<PrevousRequest>
 
-export const wrappers: Wrappers = (...wrappersArgs) => {
-  const wrappedFunction = wrappersArgs[wrappersArgs.length - 1]
-  const mws = wrappersArgs.slice(0, -1)
+export function wrappers<Request extends NextApiRequest>(
+  middlewares: [],
+  handler: APIHandler<Request>
+): APIHandler<Request>
+export function wrappers<Request extends NextApiRequest>(
+  middlewares: [Func<NextApiRequest, Request>],
+  handler: APIHandler<Request>
+): APIHandler<Request>
+export function wrappers<
+  Request extends NextApiRequest,
+  Request2 extends Request
+>(
+  middlewares: [Func<NextApiRequest, Request>, Func<Request, Request2>],
+  handler: APIHandler<Request2>
+): APIHandler<Request2>
+export function wrappers<
+  Request extends NextApiRequest,
+  Request2 extends Request,
+  Request3 extends Request2
+>(
+  middlewares: [
+    Func<NextApiRequest, Request>,
+    Func<Request, Request2>,
+    Func<Request2, Request3>
+  ],
+  handler: APIHandler<Request3>
+): APIHandler<Request3>
+export function wrappers<
+  Request extends NextApiRequest,
+  Request2 extends Request,
+  Request3 extends Request2,
+  Request4 extends Request3
+>(
+  middlewares: [
+    Func<NextApiRequest, Request>,
+    Func<Request, Request2>,
+    Func<Request2, Request3>,
+    Func<Request3, Request4>
+  ],
+  handler: APIHandler<Request4>
+): APIHandler<Request4>
+export function wrappers<
+  Request extends NextApiRequest,
+  Request2 extends Request,
+  Request3 extends Request2,
+  Request4 extends Request3,
+  Request5 extends Request4
+>(
+  middlewares: [
+    Func<NextApiRequest, Request>,
+    Func<Request, Request2>,
+    Func<Request2, Request3>,
+    Func<Request3, Request4>,
+    Func<Request4, Request5>
+  ],
+  handler: APIHandler<Request5>
+): APIHandler<Request5>
+export function wrappers<
+  Request extends NextApiRequest,
+  Request2 extends Request,
+  Request3 extends Request2,
+  Request4 extends Request3,
+  Request5 extends Request4,
+  Request6 extends Request5
+>(
+  middlewares: [
+    Func<NextApiRequest, Request>,
+    Func<Request, Request2>,
+    Func<Request2, Request3>,
+    Func<Request3, Request4>,
+    Func<Request4, Request5>,
+    Func<Request5, Request6>
+  ],
+  handler: APIHandler<Request6>
+): APIHandler<Request6>
 
-  let lastWrappedFunction = wrappedFunction
-  for (let i = mws.length - 1; i >= 0; i--) {
-    lastWrappedFunction = mws[i](lastWrappedFunction)
+export function wrappers(middlewares: any[], handler: APIHandler<any>) {
+  let lastWrappedFunction = handler
+  for (const middleware of middlewares) {
+    lastWrappedFunction = middleware(lastWrappedFunction as any)
   }
 
   return lastWrappedFunction
 }
 
 export default wrappers
-
