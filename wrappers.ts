@@ -53,7 +53,15 @@ type wrap3 = <T>(mw1: any, mw2: any, wf: T) => T
 type wrap4 = <T>(mw1: any, mw2: any, mw3: any, wf: T) => T
 type wrap5 = <T>(mw1: any, mw2: any, mw3: any, mw4: any, wf: T) => T
 type wrap6 = <T>(mw1: any, mw2: any, mw3: any, mw4: any, mw5: any, wf: T) => T
-type wrap7 = <T>(mw1: any, mw2: any, mw3: any, mw4: any, mw5: any, mw6: any, wf: T) => T
+type wrap7 = <T>(
+  mw1: any,
+  mw2: any,
+  mw3: any,
+  mw4: any,
+  mw5: any,
+  mw6: any,
+  wf: T
+) => T
 
 type Wrappers = wrap1 & wrap2 & wrap3 & wrap4 & wrap5 & wrap6 & wrap7
 
@@ -70,4 +78,3 @@ export const wrappers: Wrappers = (...wrappersArgs) => {
 }
 
 export default wrappers
-
