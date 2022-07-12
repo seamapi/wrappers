@@ -1,3 +1,4 @@
+import type { NextApiRequest as Req, NextApiResponse as Res } from "next"
 /*
 
 Wraps a function in layers of other functions, while preserving the input/output
@@ -46,28 +47,281 @@ const withLoggedArguments =
 
 */
 
-// TODO middleware should have a required type
-type wrap1 = <T>(wf: T) => T
-type wrap2 = <T>(mw1: any, wf: T) => T
-type wrap3 = <T>(mw1: any, mw2: any, wf: T) => T
-type wrap4 = <T>(mw1: any, mw2: any, mw3: any, wf: T) => T
-type wrap5 = <T>(mw1: any, mw2: any, mw3: any, mw4: any, wf: T) => T
-type wrap6 = <T>(mw1: any, mw2: any, mw3: any, mw4: any, mw5: any, wf: T) => T
-type wrap7 = <T>(mw1: any, mw2: any, mw3: any, mw4: any, mw5: any, mw6: any, wf: T) => T
+export type Middleware<T, Dep = {}> = (
+  next: (req: Req & Dep & T, res: Res) => any
+) => (req: Req & Dep & T, res: Res) => any
 
-type Wrappers = wrap1 & wrap2 & wrap3 & wrap4 & wrap5 & wrap6 & wrap7
+// Safer Middleware requires the use of extendRequest to ensure that the
+// new context (T) was actually added to the request. It's kind of annoying
+// to use in practice, so we don't use it for our Wrappers (yet)
+export type SaferMiddleware<T, Dep = {}> = (
+  next: (req: Req & Dep & T, res: Res) => any
+) => (req: Req & Dep, res: Res) => any
 
-export const wrappers: Wrappers = (...wrappersArgs) => {
+export const extendRequest = <T extends Req, K>(req: T, merge: K): T & K => {
+  for (const [key, v] of Object.entries(merge)) {
+    ;(req as any)[key] = v
+  }
+  return req as any
+}
+
+type Wrappers1 = <Mw1RequestContext, Mw1Dep>(
+  mw1: Middleware<Mw1RequestContext, Mw1Dep>,
+  endpoint: (req: Mw1RequestContext, res: Res) => any
+) => (req: Req, res: Res) => any
+
+type Wrappers2 = <
+  Mw1RequestContext extends Mw2Dep,
+  Mw1Dep,
+  Mw2RequestContext,
+  Mw2Dep
+>(
+  mw1: Middleware<Mw1RequestContext, Mw1Dep>,
+  mw2: Middleware<Mw2RequestContext, Mw2Dep>,
+  endpoint: (req: Mw1RequestContext & Mw2RequestContext, res: Res) => any
+) => (req: Req, res: Res) => any
+
+// TODO figure out how to do a recursive definition, or one that simplifies
+// these redundant wrappers
+
+type Wrappers3 = <
+  Mw1RequestContext extends Mw2Dep,
+  Mw1Dep,
+  Mw2RequestContext,
+  Mw2Dep,
+  Mw3RequestContext,
+  Mw3Dep
+>(
+  mw1: Middleware<Mw1RequestContext, Mw1Dep>,
+  mw2: Middleware<Mw2RequestContext, Mw2Dep>,
+  mw3: Middleware<
+    Mw3RequestContext,
+    Mw1RequestContext & Mw2RequestContext extends Mw3Dep ? Mw3Dep : never
+  >,
+  endpoint: (
+    req: Mw1RequestContext & Mw2RequestContext & Mw3RequestContext,
+    res: Res
+  ) => any
+) => (req: Req, res: Res) => any
+
+type Wrappers4 = <
+  Mw1RequestContext extends Mw2Dep,
+  Mw1Dep,
+  Mw2RequestContext,
+  Mw2Dep,
+  Mw3RequestContext,
+  Mw3Dep,
+  Mw4RequestContext,
+  Mw4Dep
+>(
+  mw1: Middleware<Mw1RequestContext, Mw1Dep>,
+  mw2: Middleware<Mw2RequestContext, Mw2Dep>,
+  mw3: Middleware<
+    Mw3RequestContext,
+    Mw1RequestContext & Mw2RequestContext extends Mw3Dep ? Mw3Dep : never
+  >,
+  mw4: Middleware<
+    Mw4RequestContext,
+    Mw1RequestContext & Mw2RequestContext & Mw3RequestContext extends Mw4Dep
+      ? Mw4Dep
+      : never
+  >,
+  endpoint: (
+    req: Mw1RequestContext &
+      Mw2RequestContext &
+      Mw3RequestContext &
+      Mw4RequestContext,
+    res: Res
+  ) => any
+) => (req: Req, res: Res) => any
+
+type Wrappers5 = <
+  Mw1RequestContext extends Mw2Dep,
+  Mw1Dep,
+  Mw2RequestContext,
+  Mw2Dep,
+  Mw3RequestContext,
+  Mw3Dep,
+  Mw4RequestContext,
+  Mw4Dep,
+  Mw5RequestContext,
+  Mw5Dep
+>(
+  mw1: Middleware<Mw1RequestContext, Mw1Dep>,
+  mw2: Middleware<Mw2RequestContext, Mw2Dep>,
+  mw3: Middleware<
+    Mw3RequestContext,
+    Mw1RequestContext & Mw2RequestContext extends Mw3Dep ? Mw3Dep : never
+  >,
+  mw4: Middleware<
+    Mw4RequestContext,
+    Mw1RequestContext & Mw2RequestContext & Mw3RequestContext extends Mw4Dep
+      ? Mw4Dep
+      : never
+  >,
+  mw5: Middleware<
+    Mw5RequestContext,
+    Mw1RequestContext &
+      Mw2RequestContext &
+      Mw3RequestContext &
+      Mw4RequestContext extends Mw5Dep
+      ? Mw5Dep
+      : never
+  >,
+  endpoint: (
+    req: Mw1RequestContext &
+      Mw2RequestContext &
+      Mw3RequestContext &
+      Mw4RequestContext &
+      Mw5RequestContext,
+    res: Res
+  ) => any
+) => (req: Req, res: Res) => any
+
+type Wrappers6 = <
+  Mw1RequestContext extends Mw2Dep,
+  Mw1Dep,
+  Mw2RequestContext,
+  Mw2Dep,
+  Mw3RequestContext,
+  Mw3Dep,
+  Mw4RequestContext,
+  Mw4Dep,
+  Mw5RequestContext,
+  Mw5Dep,
+  Mw6RequestContext,
+  Mw6Dep
+>(
+  mw1: Middleware<Mw1RequestContext, Mw1Dep>,
+  mw2: Middleware<Mw2RequestContext, Mw2Dep>,
+  mw3: Middleware<
+    Mw3RequestContext,
+    Mw1RequestContext & Mw2RequestContext extends Mw3Dep ? Mw3Dep : never
+  >,
+  mw4: Middleware<
+    Mw4RequestContext,
+    Mw1RequestContext & Mw2RequestContext & Mw3RequestContext extends Mw4Dep
+      ? Mw4Dep
+      : never
+  >,
+  mw5: Middleware<
+    Mw5RequestContext,
+    Mw1RequestContext &
+      Mw2RequestContext &
+      Mw3RequestContext &
+      Mw4RequestContext extends Mw5Dep
+      ? Mw5Dep
+      : never
+  >,
+  mw6: Middleware<
+    Mw6RequestContext,
+    Mw1RequestContext &
+      Mw2RequestContext &
+      Mw3RequestContext &
+      Mw4RequestContext &
+      Mw5RequestContext extends Mw6Dep
+      ? Mw6Dep
+      : never
+  >,
+  endpoint: (
+    req: Mw1RequestContext &
+      Mw2RequestContext &
+      Mw3RequestContext &
+      Mw4RequestContext &
+      Mw5RequestContext &
+      Mw6RequestContext,
+    res: Res
+  ) => any
+) => (req: Req, res: Res) => any
+
+type Wrappers7 = <
+  Mw1RequestContext extends Mw2Dep,
+  Mw1Dep,
+  Mw2RequestContext,
+  Mw2Dep,
+  Mw3RequestContext,
+  Mw3Dep,
+  Mw4RequestContext,
+  Mw4Dep,
+  Mw5RequestContext,
+  Mw5Dep,
+  Mw6RequestContext,
+  Mw6Dep,
+  Mw7RequestContext,
+  Mw7Dep
+>(
+  mw1: Middleware<Mw1RequestContext, Mw1Dep>,
+  mw2: Middleware<Mw2RequestContext, Mw2Dep>,
+  mw3: Middleware<
+    Mw3RequestContext,
+    Mw1RequestContext & Mw2RequestContext extends Mw3Dep ? Mw3Dep : never
+  >,
+  mw4: Middleware<
+    Mw4RequestContext,
+    Mw1RequestContext & Mw2RequestContext & Mw3RequestContext extends Mw4Dep
+      ? Mw4Dep
+      : never
+  >,
+  mw5: Middleware<
+    Mw5RequestContext,
+    Mw1RequestContext &
+      Mw2RequestContext &
+      Mw3RequestContext &
+      Mw4RequestContext extends Mw5Dep
+      ? Mw5Dep
+      : never
+  >,
+  mw6: Middleware<
+    Mw6RequestContext,
+    Mw1RequestContext &
+      Mw2RequestContext &
+      Mw3RequestContext &
+      Mw4RequestContext &
+      Mw5RequestContext extends Mw6Dep
+      ? Mw6Dep
+      : never
+  >,
+  mw7: Middleware<
+    Mw7RequestContext,
+    Mw1RequestContext &
+      Mw2RequestContext &
+      Mw3RequestContext &
+      Mw4RequestContext &
+      Mw5RequestContext &
+      Mw6RequestContext extends Mw7Dep
+      ? Mw7Dep
+      : never
+  >,
+  endpoint: (
+    req: Mw1RequestContext &
+      Mw2RequestContext &
+      Mw3RequestContext &
+      Mw4RequestContext &
+      Mw5RequestContext &
+      Mw6RequestContext &
+      Mw7RequestContext,
+    res: Res
+  ) => any
+) => (req: Req, res: Res) => any
+
+type Wrappers = Wrappers1 &
+  Wrappers2 &
+  Wrappers3 &
+  Wrappers4 &
+  Wrappers5 &
+  Wrappers6 &
+  Wrappers7
+
+export const wrappers: Wrappers = (...wrappersArgs: any[]) => {
   const wrappedFunction = wrappersArgs[wrappersArgs.length - 1]
   const mws = wrappersArgs.slice(0, -1)
 
   let lastWrappedFunction = wrappedFunction
   for (let i = mws.length - 1; i >= 0; i--) {
-    lastWrappedFunction = mws[i](lastWrappedFunction)
+    lastWrappedFunction = (mws[i] as any)(lastWrappedFunction)
   }
 
   return lastWrappedFunction
 }
 
 export default wrappers
-
