@@ -94,15 +94,18 @@ export const wrappers = <
         (req: Mw1RequestContext, res: any) => any
       ]
     | [
-        Middleware<Mw1RequestContext>,
-        Middleware<Mw2RequestContext>,
+        Middleware<Mw1RequestContext, Mw1Dep>,
+        Middleware<Mw2RequestContext, Mw2Dep>,
         (req: Mw1RequestContext & Mw2RequestContext, res: any) => any
       ]
     | [
-        Middleware<Mw1RequestContext>,
-        Middleware<Mw2RequestContext>,
-        Middleware<Mw3RequestContext>,
-        (req: Mw1RequestContext & Mw2RequestContext, res: any) => any
+        Middleware<Mw1RequestContext, Mw1Dep>,
+        Middleware<Mw2RequestContext, Mw2Dep>,
+        Middleware<Mw3RequestContext, Mw3Dep>,
+        (
+          req: Mw1RequestContext & Mw2RequestContext & Mw3RequestContext,
+          res: any
+        ) => any
       ]
 ) => {
   const wrappedFunction = wrappersArgs[wrappersArgs.length - 1]
