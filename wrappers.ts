@@ -47,25 +47,64 @@ const withLoggedArguments =
 */
 
 // TODO middleware should have a required type
-type wrap1 = <T>(wf: T) => T
-type wrap2 = <T>(mw1: any, wf: T) => T
-type wrap3 = <T>(mw1: any, mw2: any, wf: T) => T
-type wrap4 = <T>(mw1: any, mw2: any, mw3: any, wf: T) => T
-type wrap5 = <T>(mw1: any, mw2: any, mw3: any, mw4: any, wf: T) => T
-type wrap6 = <T>(mw1: any, mw2: any, mw3: any, mw4: any, mw5: any, wf: T) => T
-type wrap7 = <T>(
-  mw1: any,
-  mw2: any,
-  mw3: any,
-  mw4: any,
-  mw5: any,
-  mw6: any,
-  wf: T
-) => T
+// type wrap1 = <T>(wf: T) => T
+// type wrap2 = <T>(mw1: any, wf: T) => T
+// type wrap3 = <T>(mw1: any, mw2: any, wf: T) => T
+// type wrap4 = <T>(mw1: any, mw2: any, mw3: any, wf: T) => T
+// type wrap5 = <T>(mw1: any, mw2: any, mw3: any, mw4: any, wf: T) => T
+// type wrap6 = <T>(mw1: any, mw2: any, mw3: any, mw4: any, mw5: any, wf: T) => T
+// type wrap7 = <T>(
+//   mw1: any,
+//   mw2: any,
+//   mw3: any,
+//   mw4: any,
+//   mw5: any,
+//   mw6: any,
+//   wf: T
+// ) => T
 
-type Wrappers = wrap1 & wrap2 & wrap3 & wrap4 & wrap5 & wrap6 & wrap7
+// type Wrappers = wrap1 & wrap2 & wrap3 & wrap4 & wrap5 & wrap6 & wrap7
 
-export const wrappers: Wrappers = (...wrappersArgs) => {
+export type Middleware<T, Dep = {}> = (
+  next: (req: T, res: any) => any
+) => (req: Dep, res: any) => any
+
+// export type Wrappers<
+//   Mw1RequestContext,
+//   Mw1Dep = {},
+//   Mw2RequestContext,
+//   Mw2Dep = {}
+// > = (
+//   mw1: Middleware<Mw1RequestContext, Mw1Dep>,
+//   mw2: Middleware<Mw2RequestContext>,
+//   endpoint: (req: Mw1RequestContext & Mw2RequestContext, res: any) => any
+// ) => (req: any, res: any) => any
+
+export const wrappers = <
+  Mw1RequestContext,
+  Mw1Dep = {},
+  Mw2RequestContext = {},
+  Mw2Dep = {},
+  Mw3RequestContext = {},
+  Mw3Dep = {}
+>(
+  ...wrappersArgs:
+    | [
+        Middleware<Mw1RequestContext, Mw1Dep>,
+        (req: Mw1RequestContext, res: any) => any
+      ]
+    | [
+        Middleware<Mw1RequestContext>,
+        Middleware<Mw2RequestContext>,
+        (req: Mw1RequestContext & Mw2RequestContext, res: any) => any
+      ]
+    | [
+        Middleware<Mw1RequestContext>,
+        Middleware<Mw2RequestContext>,
+        Middleware<Mw3RequestContext>,
+        (req: Mw1RequestContext & Mw2RequestContext, res: any) => any
+      ]
+) => {
   const wrappedFunction = wrappersArgs[wrappersArgs.length - 1]
   const mws = wrappersArgs.slice(0, -1)
 
