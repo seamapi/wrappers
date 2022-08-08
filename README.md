@@ -3,34 +3,26 @@
 For the common use case of wrapping a NextJS endpoint with methods that act as middleware.
 
 Wraps a function in layers of other functions, while preserving the input/output
-type. The output of wrappers will always have the type of its last parameter
+type. The output of wrappers will always have the type of it's last parameter
 (the wrapped function)
 
 This function turns this type of composition...
 
 ```ts
-withDatabase(
-  logger.withContext("somecontext")(async (req, res) => {
-    res.status(200).end("...")
-  })
+logger.withContext("somecontext")(
+  async (a, b) => {
+    return a
+  }
 )
 ```
 
 Into...
 
 ```ts
-wrappers(withDatabase, logger.withContext("somecontext"), async (req, res) => {
-  res.status(200).end("...")
-})
-
-// OR...
-
-
 wrappers(
-  withDatabase, 
   logger.withContext("somecontext"),
-  async (req, res) => {
-    res.status(200).end("...")
+  async (a, b) => {
+    return a
   }
 )
 ```
@@ -39,27 +31,26 @@ Having this as a utility method helps preserve types, which otherwise can get
 messed up by the middlewares. It also can make the code cleaner where there are
 multiple wrappers.
 
-## EXAMPLES
-
-In the context of request middleware you might write something like this...
-
 ```ts
-const withRequestLoggingMiddleware = (next) => async (req, res) => {
-  console.log(`GOT REQUEST ${req.method} ${req.path}`)
-  return next(req, res)
+const mw1: Middleware<{ mw1_artifact: number }> = (next) => (req, res) => {
+  req.mw1_artifact = 1
+  next(req, res)
 }
-```
 
-Here's an example of a wrapper that takes some parameters...
+const mw2: Middleware<{ mw2_artifact: number }> = (next) => (req, res) => {
+  req.mw2_artifact = 2
+  next(req, res)
+}
 
-```ts
-const withLoggedArguments =
-  (logPrefix: string) =>
-  (next) =>
-  async (...funcArgs) => {
-    console.log(logPrefix, ...funcArgs)
-    return next(...funcArgs)
+const mw3: Middleware<{ mw3_artifact: number }, { mw1_artifact: number }> =
+  (next) => (req, res) => {
+    req.mw1_artifact // this is defined because of the dependency def
+    next(req, res)
   }
+
+wrappers(mw1, mw2, mw3, (req, res) => {
+  req
+})
 ```
 
 ## Installation
