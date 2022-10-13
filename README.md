@@ -34,17 +34,6 @@ wrappers(
     res.status(200).end("...")
   }
 )
-
-// OR...
-
-
-wrappers(
-  withDatabase, 
-  logger.withContext("somecontext"),
-  async (req, res) => {
-    res.status(200).end("...")
-  }
-)
 ```
 
 Having this as a utility method helps preserve types, which otherwise can get
