@@ -67,7 +67,7 @@ export const extendRequest = <T extends Req, K>(req: T, merge: K): T & K => {
 
 type Wrappers1 = <Mw1RequestContext, Mw1Dep>(
   mw1: Middleware<Mw1RequestContext, Mw1Dep>,
-  endpoint: (req: Mw1RequestContext, res: Res) => any
+  endpoint: (req: Req & Mw1RequestContext, res: Res) => any
 ) => (req: Req, res: Res) => any
 
 type Wrappers2 = <
@@ -78,7 +78,7 @@ type Wrappers2 = <
 >(
   mw1: Middleware<Mw1RequestContext, Mw1Dep>,
   mw2: Middleware<Mw2RequestContext, Mw2Dep>,
-  endpoint: (req: Mw1RequestContext & Mw2RequestContext, res: Res) => any
+  endpoint: (req: Req & Mw1RequestContext & Mw2RequestContext, res: Res) => any
 ) => (req: Req, res: Res) => any
 
 // TODO figure out how to do a recursive definition, or one that simplifies
@@ -99,7 +99,7 @@ type Wrappers3 = <
     Mw1RequestContext & Mw2RequestContext extends Mw3Dep ? Mw3Dep : never
   >,
   endpoint: (
-    req: Mw1RequestContext & Mw2RequestContext & Mw3RequestContext,
+    req: Req & Mw1RequestContext & Mw2RequestContext & Mw3RequestContext,
     res: Res
   ) => any
 ) => (req: Req, res: Res) => any
@@ -127,7 +127,7 @@ type Wrappers4 = <
       : never
   >,
   endpoint: (
-    req: Mw1RequestContext &
+    req: Req & Mw1RequestContext &
       Mw2RequestContext &
       Mw3RequestContext &
       Mw4RequestContext,
@@ -169,7 +169,7 @@ type Wrappers5 = <
       : never
   >,
   endpoint: (
-    req: Mw1RequestContext &
+    req: Req & Mw1RequestContext &
       Mw2RequestContext &
       Mw3RequestContext &
       Mw4RequestContext &
@@ -224,7 +224,7 @@ type Wrappers6 = <
       : never
   >,
   endpoint: (
-    req: Mw1RequestContext &
+    req: Req & Mw1RequestContext &
       Mw2RequestContext &
       Mw3RequestContext &
       Mw4RequestContext &
@@ -293,7 +293,7 @@ type Wrappers7 = <
       : never
   >,
   endpoint: (
-    req: Mw1RequestContext &
+    req: Req & Mw1RequestContext &
       Mw2RequestContext &
       Mw3RequestContext &
       Mw4RequestContext &

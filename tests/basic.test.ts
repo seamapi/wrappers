@@ -96,4 +96,6 @@ test("test wrappers types", async (t) => {
   wrappers(mw2, mw2, mw1, mw2, mw2, mw2, mw3, (req, res) => {
     req
   })
+
+  t.pass()
 })
