@@ -24,9 +24,6 @@ jobs:
         run: npm install
       - name: Build NPM package
         run: npm run build
-
-      - name: Test
-        run: npm run test
       - name: Release Github
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GWM_GH_TOKEN }}
