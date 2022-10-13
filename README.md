@@ -2,6 +2,14 @@
 
 For the common use case of wrapping a NextJS endpoint with methods that act as middleware.
 
+## Installation
+
+```
+yarn install nextjs-middleware-wrappers
+```
+
+### Usage
+
 Wraps a function in layers of other functions, while preserving the input/output
 type. The output of wrappers will always have the type of its last parameter
 (the wrapped function)
@@ -19,9 +27,13 @@ withDatabase(
 Into...
 
 ```ts
-wrappers(withDatabase, logger.withContext("somecontext"), async (req, res) => {
-  res.status(200).end("...")
-})
+wrappers(
+  withDatabase,
+  logger.withContext("somecontext"),
+  async (req, res) => {
+    res.status(200).end("...")
+  }
+)
 
 // OR...
 
